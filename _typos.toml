@@ -1,0 +1,13 @@
+[build]
+extend-words = [
+  "adyranov",
+  "GGML",
+  "GGUF",
+  "Homebrew",
+  "llama",
+  "macOS",
+  "parakeet",
+  "SDL2",
+  "sha256",
+  "whisper",
+]

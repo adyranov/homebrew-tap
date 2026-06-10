@@ -1,0 +1,62 @@
+minimum_pre_commit_version: "4.6.0"
+
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+
+default_stages:
+  - pre-commit
+
+default_language_version:
+  python: python3.14
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-yaml
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace
+        exclude: \.md$
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: ["-c", ".yamllint.yml"]
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.3
+    hooks:
+      - id: check-github-workflows
+      - id: check-renovate
+        additional_dependencies: ["json5"]
+
+  - repo: local
+    hooks:
+      - id: ruby-syntax
+        name: Ruby syntax
+        entry: ruby -c
+        language: system
+        types: [ruby]
+
+      - id: brew-style
+        name: Homebrew style
+        entry: brew style
+        language: system
+        files: ^(Formula|lib)/.*\.rb$
+        stages: [pre-push, manual]

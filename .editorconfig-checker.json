@@ -1,0 +1,6 @@
+{
+  "root": ".",
+  "exclude": [],
+  "ignoreDefaults": false,
+  "disable": ["MaxLineLength"]
+}

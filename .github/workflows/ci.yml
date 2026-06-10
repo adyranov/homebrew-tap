@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "Formula/**"
+      - "lib/**"
+      - ".github/renovate.json5"
+      - ".github/workflows/**"
+  push:
+    branches: [main]
+    paths:
+      - "Formula/**"
+      - "lib/**"
+      - ".github/renovate.json5"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  brew:
+    name: Homebrew (${{ matrix.arch }})
+    runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 60
+    env:
+      HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_ENV_HINTS: "1"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runs-on: macos-15
+          - arch: x86_64
+            runs-on: macos-15-intel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Verify runner architecture
+        run: test "$(uname -m)" = "${{ matrix.arch }}"
+
+      - name: Tap local checkout
+        run: brew tap --force adyranov/tap "$GITHUB_WORKSPACE"
+
+      - name: Trust local tap
+        run: brew trust adyranov/tap
+
+      - name: Audit formulae
+        run: >-
+          brew audit --strict --online --formula
+          adyranov/tap/llama-cpp
+          adyranov/tap/parakeet-cpp
+          adyranov/tap/stable-diffusion-cpp
+          adyranov/tap/whisper-cpp
+
+      - name: Style formulae
+        run: brew style Formula/*.rb lib/*.rb
+
+      - name: Install and test formulae
+        env:
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+        run: |
+          set -euo pipefail
+          for formula in llama-cpp parakeet-cpp stable-diffusion-cpp whisper-cpp; do
+            brew install --formula "adyranov/tap/$formula"
+            brew test "adyranov/tap/$formula"
+          done

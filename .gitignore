@@ -1,0 +1,27 @@
+# Release/download artifacts
+*.tar.gz
+*.sha256
+artifacts/
+
+# Homebrew/Ruby
+.bundle/
+vendor/bundle/
+
+# Python/mise
+__pycache__/
+*.pyc
+.venv/
+.mise/
+
+# Editor and OS state
+.idea/
+.vscode/tasks.json
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Local state
+.env
+.env.local
+.atl/

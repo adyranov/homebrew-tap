@@ -1,0 +1,11 @@
+* text=auto
+
+*.rb text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.json5 text eol=lf
+*.md text eol=lf
+*.sha256 text eol=lf
+*.tar.gz binary

@@ -1,0 +1,41 @@
+[env]
+# Keep Python user installs out of the system prefix.
+PYTHONUSERBASE = "{{ env.HOME }}/.local"
+
+[tools]
+ruby = "4.0.5"
+python = "3.14.6"
+
+[tasks]
+syntax = """
+set -eu
+for file in Formula/*.rb lib/*.rb; do
+  ruby -c "$file"
+done
+"""
+
+yaml = """
+ruby -e 'require "yaml"; Dir[".github/workflows/*.yml", ".yamllint.yml"].each { |file| YAML.load_file(file) }'
+"""
+
+conflict-markers = """
+! rg -n --glob '!.git/**' '<<<<<<<|=======|>>>>>>>|\\|\\|\\|\\|\\|\\|\\|' .
+"""
+
+style = "brew style Formula/*.rb lib/*.rb"
+
+audit = """
+brew audit --strict --online --formula \
+  adyranov/tap/llama-cpp \
+  adyranov/tap/parakeet-cpp \
+  adyranov/tap/stable-diffusion-cpp \
+  adyranov/tap/whisper-cpp
+"""
+
+pre-commit = "pre-commit run --all-files --show-diff-on-failure"
+
+lint = "mise run syntax && mise run yaml && mise run conflict-markers && mise run style"
+
+install = "brew install adyranov/tap/${FORMULA:-llama-cpp}"
+
+test = "brew test adyranov/tap/${FORMULA:-llama-cpp}"
