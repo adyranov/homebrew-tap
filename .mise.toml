@@ -27,9 +27,12 @@ style = "brew style Formula/*.rb lib/*.rb"
 audit = """
 brew audit --strict --online --formula \
   adyranov/tap/llama-cpp \
-  adyranov/tap/parakeet-cpp \
+  adyranov/tap/whisper-cpp \
   adyranov/tap/stable-diffusion-cpp \
-  adyranov/tap/whisper-cpp
+  adyranov/tap/parakeet-cpp \
+  adyranov/tap/acestep-cpp \
+  adyranov/tap/crispasr \
+  adyranov/tap/omnivoice-cpp
 """
 
 pre-commit = "pre-commit run --all-files --show-diff-on-failure"

@@ -4,17 +4,44 @@
   timezone: "Etc/UTC",
   prConcurrentLimit: 5,
   labels: ["dependencies"],
+  // The built-in homebrew manager only reads the first url/sha256 pair and assumes
+  // release assets named like repo-version.tar.gz. Our dual-arch ggml-metal-dist
+  // tarballs need the custom regex manager + bump script below instead.
+  customManagers: [
+    {
+      description: "ggml-metal-dist release version (canary: llama-cpp)",
+      customType: "regex",
+      managerFilePatterns: ["/Formula/llama-cpp\\.rb$/"],
+      matchStrings: [
+        "github\\.com/adyranov/ggml-metal-dist/releases/download/(?<currentValue>v[0-9.]+)/",
+      ],
+      depNameTemplate: "adyranov/ggml-metal-dist",
+      datasourceTemplate: "github-releases",
+      versioningTemplate: "semver",
+    },
+  ],
   packageRules: [
     {
-      description: "Update ggml-metal-dist Homebrew formulae together",
+      description: "Disable homebrew manager for ggml-metal-dist (unsupported URL layout)",
       matchManagers: ["homebrew"],
       matchPackageNames: ["adyranov/ggml-metal-dist"],
+      enabled: false,
+    },
+    {
+      description: "Update ggml-metal-dist Homebrew formulae together",
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["adyranov/ggml-metal-dist"],
       groupName: "ggml-metal-dist formulae",
       groupSlug: "ggml-metal-dist-formulae",
       minimumReleaseAge: "2 days",
       addLabels: ["homebrew"],
       commitMessageTopic: "ggml-metal-dist formulae",
       commitMessageExtra: "({{newVersion}})",
+      postUpgradeTasks: {
+        commands: ["ruby scripts/bump_ggml_metal_dist_formulae.rb {{newVersion}}"],
+        fileFilters: ["Formula/**"],
+        executionMode: "branch",
+      },
     },
     {
       description: "Bulk pre-commit hook updates monthly",

@@ -57,7 +57,9 @@ brew style Formula/*.rb lib/*.rb
 For full formula validation:
 
 ```sh
-brew audit --strict --online --formula llama-cpp parakeet-cpp stable-diffusion-cpp whisper-cpp
+brew audit --strict --online --formula \
+  llama-cpp whisper-cpp stable-diffusion-cpp parakeet-cpp \
+  acestep-cpp crispasr omnivoice-cpp
 brew install adyranov/tap/llama-cpp
 brew test adyranov/tap/llama-cpp
 ```
@@ -71,6 +73,7 @@ single formula.
 - Renovate config lives in `.github/renovate.json5`.
 - Use `helpers:pinGitHubActionDigests` so Renovate maintains action pins.
 - Keep pre-commit hooks scoped to tap metadata, formula syntax, and cheap repository hygiene.
+- ggml-metal-dist formula bumps use a custom Renovate regex manager (canary: `llama-cpp`) plus `scripts/bump_ggml_metal_dist_formulae.rb` in `postUpgradeTasks`, because the built-in homebrew manager only handles a single `url`/`sha256` and generic GitHub release asset names.
 
 When changing formula release URLs or checksums, verify against the upstream
 GitHub release metadata before editing.

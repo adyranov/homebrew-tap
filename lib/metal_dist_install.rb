@@ -2,11 +2,20 @@
 # frozen_string_literal: true
 
 # Shared install logic for the prebuilt, Metal-accelerated binary formulae in
-# this tap (llama-cpp, whisper-cpp, stable-diffusion-cpp, parakeet-cpp).
+# this tap (llama-cpp, whisper-cpp, stable-diffusion-cpp, parakeet-cpp,
+# acestep-cpp, crispasr, omnivoice-cpp).
 # Artifacts may omit lib/ or include/, so install only the layout present.
 module MetalDistInstall
+  BIN_RENAMES = {}.freeze
+
   def install
-    bin.install Dir["bin/*"] if (buildpath/"bin").directory?
+    if (buildpath/"bin").directory?
+      Dir["bin/*"].each do |src|
+        name = File.basename(src)
+        dest = self.class::BIN_RENAMES.fetch(name, name)
+        bin.install src => dest
+      end
+    end
     lib.install Dir["lib/*"] if (buildpath/"lib").directory?
     include.install Dir["include/*"] if (buildpath/"include").directory?
 

@@ -8,18 +8,21 @@ class ParakeetCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.6.0/parakeet-cpp-v26.6.0-arm64-apple-darwin.tar.gz"
-    sha256 "e8420060aa71080a8061465a4dd14ae0bd457def500c8a8897a3806453172102"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.6.1/parakeet-cpp-v26.6.1-arm64-apple-darwin.tar.gz"
+    sha256 "5fa307e44344cd56d3e49a095a30eb8ebc6d3dc6213f2a115649afe3fe23e1b4"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.6.0/parakeet-cpp-v26.6.0-x86_64-apple-darwin.tar.gz"
-    sha256 "687756cbcf5e697bb76cc7665256dd92818a0f63759592259266c84ac1d11f46"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.6.1/parakeet-cpp-v26.6.1-x86_64-apple-darwin.tar.gz"
+    sha256 "a35337764e73ff768a93ea69ae2b298e902974f598365c6f2bb39cfee60e3b4a"
   end
 
   depends_on macos: :sonoma
 
+  conflicts_with "adyranov/tap/whisper-cpp", because: "whisper-cpp bundles parakeet-cli and parakeet-quantize"
+
   def caveats
     <<~EOS
       Model weights are not included. See parakeet.cpp docs for GGUF models.
+      Conflicts with whisper-cpp, which bundles parakeet-cli since v26.6.1.
     EOS
   end
 

@@ -13,14 +13,22 @@ Example:
 
 ```sh
 brew install adyranov/tap/llama-cpp
+brew install adyranov/tap/whisper-cpp
+brew install adyranov/tap/stable-diffusion-cpp
 brew install adyranov/tap/parakeet-cpp
+brew install adyranov/tap/acestep-cpp
+brew install adyranov/tap/crispasr
+brew install adyranov/tap/omnivoice-cpp
 ```
 
 ## 📦 Formulae
 
-| Formula                | Description                                                                                | Notes                         |
-| ---------------------- | ------------------------------------------------------------------------------------------ | ----------------------------- |
-| `llama-cpp`            | LLM inference ([llama.cpp](https://github.com/ggml-org/llama.cpp)), Metal-accelerated      | Conflicts with `llama.cpp`    |
-| `whisper-cpp`          | Speech-to-text ([whisper.cpp](https://github.com/ggml-org/whisper.cpp)), Metal-accelerated | Interactive tools need `sdl2` |
-| `stable-diffusion-cpp` | Image generation, Metal-accelerated                                                        | —                             |
-| `parakeet-cpp`         | Speech-to-text ([parakeet.cpp](https://github.com/mudler/parakeet.cpp)), Metal-accelerated | —                             |
+| Formula                | Description                                                                                | Notes                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| `llama-cpp`            | LLM inference ([llama.cpp](https://github.com/ggml-org/llama.cpp)), Metal-accelerated      | Conflicts with `llama.cpp`                         |
+| `whisper-cpp`          | Speech-to-text ([whisper.cpp](https://github.com/ggml-org/whisper.cpp)), Metal-accelerated | Bundles parakeet; conflicts with core `whisper-cpp` and `parakeet-cpp`; interactive tools need `sdl2` |
+| `stable-diffusion-cpp` | Image generation, Metal-accelerated                                                        | —                                                  |
+| `parakeet-cpp`         | Speech-to-text ([parakeet.cpp](https://github.com/mudler/parakeet.cpp)), Metal-accelerated | Conflicts with `whisper-cpp`                       |
+| `acestep-cpp`          | Music generation ([acestep.cpp](https://github.com/ServeurpersoCom/acestep.cpp)), Metal-accelerated | Utility binaries use `ace-*` prefixes       |
+| `crispasr`             | Multilingual ASR ([CrispASR](https://github.com/CrispStrobe/CrispASR)), Metal-accelerated  | —                                                  |
+| `omnivoice-cpp`        | Text-to-speech ([omnivoice.cpp](https://github.com/ServeurpersoCom/omnivoice.cpp)), Metal-accelerated | Utility binaries use `omnivoice-*` prefixes |

@@ -1,11 +1,14 @@
 [build]
 extend-words = [
+  "acestep",
   "adyranov",
+  "crispasr",
   "GGML",
   "GGUF",
   "Homebrew",
   "llama",
   "macOS",
+  "omnivoice",
   "parakeet",
   "SDL2",
   "sha256",

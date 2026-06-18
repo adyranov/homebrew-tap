@@ -55,23 +55,68 @@ jobs:
       - name: Trust local tap
         run: brew trust adyranov/tap
 
-      - name: Audit formulae
+      - name: Audit all formulae
         run: >-
           brew audit --strict --online --formula
           adyranov/tap/llama-cpp
-          adyranov/tap/parakeet-cpp
-          adyranov/tap/stable-diffusion-cpp
           adyranov/tap/whisper-cpp
+          adyranov/tap/stable-diffusion-cpp
+          adyranov/tap/parakeet-cpp
+          adyranov/tap/acestep-cpp
+          adyranov/tap/crispasr
+          adyranov/tap/omnivoice-cpp
 
       - name: Style formulae
         run: brew style Formula/*.rb lib/*.rb
 
-      - name: Install and test formulae
+      - name: Install and test co-installable bundle with whisper-cpp
         env:
           HOMEBREW_NO_INSTALL_FROM_API: "1"
         run: |
           set -euo pipefail
-          for formula in llama-cpp parakeet-cpp stable-diffusion-cpp whisper-cpp; do
+          for formula in llama-cpp stable-diffusion-cpp acestep-cpp crispasr omnivoice-cpp whisper-cpp; do
             brew install --formula "adyranov/tap/$formula"
             brew test "adyranov/tap/$formula"
           done
+
+      - name: Assert tap conflicts (whisper ↔ parakeet)
+        env:
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+        run: |
+          set -euo pipefail
+          if brew install --formula adyranov/tap/parakeet-cpp 2>&1; then
+            echo "expected conflict: parakeet-cpp vs whisper-cpp"
+            exit 1
+          fi
+          brew uninstall --formula adyranov/tap/whisper-cpp
+          brew install --formula adyranov/tap/parakeet-cpp
+          brew test adyranov/tap/parakeet-cpp
+          if brew install --formula adyranov/tap/whisper-cpp 2>&1; then
+            echo "expected conflict: whisper-cpp vs parakeet-cpp"
+            exit 1
+          fi
+
+      - name: Assert core conflicts (llama.cpp, whisper-cpp)
+        env:
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+        run: |
+          set -euo pipefail
+          if brew install --formula llama.cpp 2>&1; then
+            echo "expected conflict: llama.cpp vs tap llama-cpp"
+            exit 1
+          fi
+          brew uninstall --formula adyranov/tap/parakeet-cpp
+          brew install --formula adyranov/tap/whisper-cpp
+          if brew install --formula whisper-cpp 2>&1; then
+            echo "expected conflict: core whisper-cpp vs tap whisper-cpp"
+            exit 1
+          fi
+
+      - name: Assert binary renames
+        run: |
+          set -euo pipefail
+          test -x "$(brew --prefix)/bin/ace-quantize"
+          test -x "$(brew --prefix)/bin/omnivoice-quantize"
+          test -x "$(brew --prefix)/bin/omnivoice-tts-server"
+          ! test -e "$(brew --prefix)/bin/quantize"
+          test -x "$(brew --prefix)/bin/parakeet-cli"
