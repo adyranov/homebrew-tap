@@ -4,39 +4,28 @@
 # Update all ggml-metal-dist formulae to a new release tag.
 # Used by Renovate postUpgradeTasks; can also be run manually:
 #   ruby scripts/bump_ggml_metal_dist_formulae.rb v26.6.2
-require "json"
-require "net/http"
-require "uri"
+require "digest"
+require "open-uri"
 
 REPO = "adyranov/ggml-metal-dist"
 FORMULA_DIR = File.expand_path("../Formula", __dir__)
 ARCHES = %w[arm64 x86_64].freeze
 
-def release_assets(version)
-  uri = URI("https://api.github.com/repos/#{REPO}/releases/tags/#{version}")
-  request = Net::HTTP::Get.new(uri)
-  request["User-Agent"] = "homebrew-tap-bump"
-  request["Accept"] = "application/vnd.github+json"
-
-  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-    http.request(request)
+def digest_for(url)
+  puts "Fetching #{url}"
+  sha256 = Digest::SHA256.new
+  # Use an explicitly unauthenticated request and follow redirects
+  URI.open(url, "rb") do |f|
+    while (chunk = f.read(1024 * 1024))
+      sha256.update(chunk)
+    end
   end
-  raise "Release #{version} not found (#{response.code})" unless response.is_a?(Net::HTTPSuccess)
-
-  JSON.parse(response.body).fetch("assets")
+  sha256.hexdigest
+rescue OpenURI::HTTPError => e
+  raise "Failed to download #{url}: #{e.message}"
 end
 
-def digest_for(assets, filename)
-  asset = assets.find { |entry| entry["name"] == filename }
-  raise "Release asset not found: #{filename}" unless asset
-
-  digest = asset["digest"] || asset["checksum"]
-  raise "Release asset missing digest: #{filename}" if digest.nil? || digest.empty?
-
-  digest.delete_prefix("sha256:")
-end
-
-def bump_formula(path, version, assets)
+def bump_formula(path, version)
   formula = File.basename(path, ".rb")
   content = File.read(path)
   return unless content.include?("github.com/#{REPO}/releases/download/")
@@ -44,7 +33,7 @@ def bump_formula(path, version, assets)
   ARCHES.each do |arch|
     filename = "#{formula}-#{version}-#{arch}-apple-darwin.tar.gz"
     url = "https://github.com/#{REPO}/releases/download/#{version}/#{filename}"
-    sha256 = digest_for(assets, filename)
+    sha256 = digest_for(url)
 
     # Replace the url and its following sha256 atomically, preserving the
     # original indentation (captured in \1) so the script is layout-agnostic.
@@ -61,5 +50,4 @@ end
 version = ARGV.fetch(0)
 raise "Version must look like v1.2.3 (got #{version})" unless version.match?(/\Av[0-9.]+(?:-[0-9A-Za-z.]+)?\z/)
 
-assets = release_assets(version)
-Dir.glob("#{FORMULA_DIR}/*.rb").sort.each { |path| bump_formula(path, version, assets) }
+Dir.glob("#{FORMULA_DIR}/*.rb").sort.each { |path| bump_formula(path, version) }

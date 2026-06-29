@@ -36,11 +36,6 @@
       addLabels: ["homebrew"],
       commitMessageTopic: "ggml-metal-dist formulae",
       commitMessageExtra: "({{newVersion}})",
-      postUpgradeTasks: {
-        commands: ["ruby scripts/bump_ggml_metal_dist_formulae.rb {{newVersion}}"],
-        fileFilters: ["Formula/**"],
-        executionMode: "branch",
-      },
     },
     {
       description: "Bulk pre-commit hook updates monthly",
