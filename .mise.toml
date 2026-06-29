@@ -29,7 +29,6 @@ brew audit --strict --online --formula \
   adyranov/tap/llama-cpp \
   adyranov/tap/whisper-cpp \
   adyranov/tap/stable-diffusion-cpp \
-  adyranov/tap/parakeet-cpp \
   adyranov/tap/acestep-cpp \
   adyranov/tap/crispasr \
   adyranov/tap/omnivoice-cpp

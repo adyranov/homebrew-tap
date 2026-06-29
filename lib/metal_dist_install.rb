@@ -25,7 +25,10 @@ module MetalDistInstall
     end
 
     (Dir[bin/"*"] + Dir[lib/"*.dylib"]).each do |path|
+      next unless mach_o?(path)
+
       add_lib_rpath(Pathname(path))
+      system "codesign", "--force", "--sign", "-", path.to_s
     end
   end
 
