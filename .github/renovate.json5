@@ -11,7 +11,7 @@
     {
       description: "ggml-metal-dist release version (canary: llama-cpp)",
       customType: "regex",
-      managerFilePatterns: ["/Formula/llama-cpp\\.rb$/"],
+      managerFilePatterns: ["/^Formula/llama-cpp\\.rb$/"],
       matchStrings: [
         "github\\.com/adyranov/ggml-metal-dist/releases/download/(?<currentValue>v[0-9.]+)/",
       ],
@@ -33,7 +33,6 @@
       matchDepNames: ["adyranov/ggml-metal-dist"],
       groupName: "ggml-metal-dist formulae",
       groupSlug: "ggml-metal-dist-formulae",
-      minimumReleaseAge: "2 days",
       addLabels: ["homebrew"],
       commitMessageTopic: "ggml-metal-dist formulae",
       commitMessageExtra: "({{newVersion}})",
@@ -50,8 +49,7 @@
       groupSlug: "pre-commit-hooks",
       schedule: ["before 6am on the first day of the month"],
       addLabels: ["pre-commit"],
-      commitMessageTopic: "pre-commit hooks",
-      commitMessageExtra: "({{groupName}})",
+      commitMessageTopic: "monthly pre-commit hooks",
     },
     {
       description: "Bulk GitHub Actions updates monthly",
@@ -59,8 +57,7 @@
       groupName: "github-actions",
       groupSlug: "github-actions",
       schedule: ["before 6am on the first day of the month"],
-      commitMessageTopic: "GitHub Actions",
-      commitMessageExtra: "({{groupName}})",
+      commitMessageTopic: "monthly GitHub Actions",
     },
   ],
 }

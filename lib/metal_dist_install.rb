@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 # Shared install logic for the prebuilt, Metal-accelerated binary formulae in
-# this tap (llama-cpp, whisper-cpp, stable-diffusion-cpp, parakeet-cpp,
-# acestep-cpp, crispasr, omnivoice-cpp).
+# this tap (llama-cpp, whisper-cpp, stable-diffusion-cpp, acestep-cpp,
+# crispasr, omnivoice-cpp).
 # Artifacts may omit lib/ or include/, so install only the layout present.
 module MetalDistInstall
   BIN_RENAMES = {}.freeze

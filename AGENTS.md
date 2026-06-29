@@ -58,7 +58,7 @@ For full formula validation:
 
 ```sh
 brew audit --strict --online --formula \
-  llama-cpp whisper-cpp stable-diffusion-cpp parakeet-cpp \
+  llama-cpp whisper-cpp stable-diffusion-cpp \
   acestep-cpp crispasr omnivoice-cpp
 brew install adyranov/tap/llama-cpp
 brew test adyranov/tap/llama-cpp

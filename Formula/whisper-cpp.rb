@@ -18,15 +18,12 @@ class WhisperCpp < Formula
   depends_on macos: :sonoma
   depends_on "sdl2"
 
-  conflicts_with "adyranov/tap/parakeet-cpp",
-                 because: "both install parakeet-cli (whisper-cpp bundles parakeet since v26.6.1)"
   conflicts_with "whisper-cpp",
                  because: "both install whisper-* binaries (core uses system ggml; tap embeds Metal-patched ggml)"
 
   def caveats
     <<~EOS
-      Bundles parakeet-cli and parakeet-quantize since v26.6.1. Conflicts with parakeet-cpp
-      and Homebrew core whisper-cpp.
+      Bundles parakeet-cli and parakeet-quantize since v26.6.1. Conflicts with Homebrew core whisper-cpp.
       whisper-stream, whisper-command, and whisper-talk-llama require SDL2 (declared as depends_on).
       whisper-cli file transcription does not use SDL2 at runtime.
     EOS
