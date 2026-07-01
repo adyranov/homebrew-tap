@@ -42,7 +42,7 @@ concurrency:
 jobs:
   lint:
     name: Repository lint
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 15
     env:
       HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
