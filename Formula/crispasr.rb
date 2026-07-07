@@ -8,11 +8,11 @@ class Crispasr < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.0/crispasr-v26.7.0-arm64-apple-darwin.tar.gz"
-    sha256 "cac36acca901526c2ba60ab1c3309ce0e08c63e830c8dae3fa3744fd7b104e02"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.1/crispasr-v26.7.1-arm64-apple-darwin.tar.gz"
+    sha256 "926c911c581b3b7805259f7c4257c9bc8638ac756acf49f18ddddc1b23f06615"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.0/crispasr-v26.7.0-x86_64-apple-darwin.tar.gz"
-    sha256 "d5bc815f63e894144e9e6fa0917314f2541bde9ea816d5769da34a92eb1a33a4"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.1/crispasr-v26.7.1-x86_64-apple-darwin.tar.gz"
+    sha256 "a6b11e105b0222147c8bd3ddfe37fa4e35d0c9e8ee253fae2ea981998d0093e3"
   end
 
   depends_on macos: :sonoma
