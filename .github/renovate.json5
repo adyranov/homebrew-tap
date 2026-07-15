@@ -13,11 +13,14 @@
       customType: "regex",
       managerFilePatterns: ["/^Formula/llama-cpp\\.rb$/"],
       matchStrings: [
-        "github\\.com/adyranov/ggml-metal-dist/releases/download/(?<currentValue>v[0-9.]+)/",
+        "releases/download/(?<currentValue>v[0-9.]+)/llama-cpp-(?:v[0-9.]+)-",
       ],
       depNameTemplate: "adyranov/ggml-metal-dist",
       datasourceTemplate: "github-releases",
       versioningTemplate: "semver",
+      // {{{newValue}}} (raw/unescaped) replaces both the release-path
+      // version and the filename-embedded version captured in the match.
+      autoReplaceStringTemplate: "releases/download/{{{newValue}}}/llama-cpp-{{{newValue}}}-",
     },
   ],
   packageRules: [

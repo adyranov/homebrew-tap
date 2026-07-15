@@ -9,9 +9,11 @@ python = "3.14.6"
 [tasks]
 syntax = """
 set -eu
-for file in Formula/*.rb lib/*.rb; do
-  ruby -c "$file"
+for file in Formula/*.rb lib/*.rb scripts/*.rb test/*.rb; do
+  [ -f "$file" ] && ruby -c "$file"
 done
+bash -n scripts/ci_formulae.sh
+python3 -m py_compile scripts/renovate_bump.py test/test_renovate_bump.py
 """
 
 yaml = """
@@ -19,20 +21,12 @@ ruby -e 'require "yaml"; Dir[".github/workflows/*.yml", ".yamllint.yml"].each { 
 """
 
 conflict-markers = """
-! rg -n --glob '!.git/**' '<<<<<<<|=======|>>>>>>>|\\|\\|\\|\\|\\|\\|\\|' .
+! rg -n --glob '!.git/**' --glob '!.mise.toml' '<<<<<<<|=======|>>>>>>>|\\|\\|\\|\\|\\|\\|\\|' .
 """
 
 style = "brew style Formula/*.rb lib/*.rb"
 
-audit = """
-brew audit --strict --online --formula \
-  adyranov/tap/llama-cpp \
-  adyranov/tap/whisper-cpp \
-  adyranov/tap/stable-diffusion-cpp \
-  adyranov/tap/acestep-cpp \
-  adyranov/tap/crispasr \
-  adyranov/tap/omnivoice-cpp
-"""
+audit = "scripts/ci_formulae.sh audit"
 
 pre-commit = "pre-commit run --all-files --show-diff-on-failure"
 
@@ -41,3 +35,9 @@ lint = "mise run syntax && mise run yaml && mise run conflict-markers && mise ru
 install = "brew install adyranov/tap/${FORMULA:-llama-cpp}"
 
 test = "brew test adyranov/tap/${FORMULA:-llama-cpp}"
+
+test-offline = """
+ruby -Ilib -Itest test/test_bump_ggml_metal_dist_formulae.rb && \
+ruby -Ilib -Itest test/test_ci_formulae.rb && \
+python3 test/test_renovate_bump.py
+"""

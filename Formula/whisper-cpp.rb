@@ -15,8 +15,14 @@ class WhisperCpp < Formula
     sha256 "c38e9a1c50aae28a28608434642b6f5f111c639de5e5f8e5c17f6e722ccc6fd0"
   end
 
-  depends_on macos: :sonoma
-  depends_on "sdl2"
+  livecheck do
+    url :homepage
+    strategy :github_latest
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
+  depends_on macos: :sequoia
+  depends_on "sdl2-compat"
 
   conflicts_with "whisper-cpp",
                  because: "both install whisper-* binaries (core uses system ggml; tap embeds Metal-patched ggml)"
@@ -33,6 +39,6 @@ class WhisperCpp < Formula
     assert_path_exists bin/"whisper-cli"
     assert_path_exists bin/"parakeet-cli"
     out = shell_output("#{bin}/whisper-cli --help 2>&1")
-    assert out.length > 20
+    assert_match(/usage:/i, out)
   end
 end

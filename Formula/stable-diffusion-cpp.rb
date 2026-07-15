@@ -15,7 +15,13 @@ class StableDiffusionCpp < Formula
     sha256 "c831eacd4fa521719edbe591182c6371f080e9d2134d2514aa8d9871f39cf7f5"
   end
 
-  depends_on macos: :sonoma
+  livecheck do
+    url :homepage
+    strategy :github_latest
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
+  depends_on macos: :sequoia
 
   def caveats
     <<~EOS
@@ -26,6 +32,6 @@ class StableDiffusionCpp < Formula
   test do
     assert_path_exists bin/"sd-cli"
     out = shell_output("#{bin}/sd-cli --help 2>&1")
-    assert out.length > 20
+    assert_match(/usage:/i, out)
   end
 end

@@ -1,44 +1,113 @@
 name: Renovate Bump
 
 on:
-  push:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "Formula/**"
     branches:
-      - renovate/ggml-metal-dist-formulae
+      - main
 
+# Only read-level default; write permission is minted ad-hoc via a short-lived
+# GitHub App token in the final push step.  The repository must define:
+#   - variable  BOT_APP_CLIENT_ID
+#   - secret    BOT_APP_PRIVATE_KEY
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: renovate-bump-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   bump-formulae:
     name: Bump remaining formulae
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Security gate: only Renovate's own PR on its dedicated branch may proceed.
+    if: |
+      github.event.pull_request.user.login == 'renovate[bot]' &&
+      github.event.pull_request.head.ref == 'renovate/ggml-metal-dist-formulae' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.ref == 'main'
     steps:
-      - name: Checkout
+      # The default pull_request_target checkout obtains the base (trusted)
+      # revision.  We use this to extract the driver scripts, NOT the PR's copy.
+      - name: Checkout base
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
-      - name: Extract new version and bump
+      - name: Extract trusted scripts from base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          # Extract the version bumped by Renovate in the canary file
-          VERSION=$(grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' Formula/llama-cpp.rb | head -n 1)
-          if [ -z "$VERSION" ]; then
-            echo "Error: Could not extract version from Formula/llama-cpp.rb"
-            exit 1
-          fi
-          echo "Bumping formulae to $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          ruby scripts/bump_ggml_metal_dist_formulae.rb "$VERSION"
+          git show "$BASE_SHA:scripts/renovate_bump.py" \
+            > "$RUNNER_TEMP/renovate_bump.py"
+          git show "$BASE_SHA:scripts/bump_ggml_metal_dist_formulae.rb" \
+            > "$RUNNER_TEMP/bump.rb"
 
-      - name: Commit and push changes
+      # Check out the PR head into the workspace.  persist-credentials is off:
+      # no GITHUB_TOKEN is exposed to git operations.
+      - name: Checkout PR head
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      # Validate the base-to-head diff, manifest structure, and canary version.
+      # Outputs: validation_result, version
+      - name: Validate PR diff and extract version
+        id: validate-pr
         run: |
-          if ! git diff --quiet; then
-            git config user.name "renovate[bot]"
-            git config user.email "29139614+renovate[bot]@users.noreply.github.com"
-            git add Formula/*.rb
-            git commit -m "build(tools): auto-bump remaining ggml-metal-dist formulae to $VERSION"
-            git push
-          else
-            echo "No changes to commit."
-          fi
+          python3 -I "$RUNNER_TEMP/renovate_bump.py" validate-pr \
+            --base-sha "${{ github.event.pull_request.base.sha }}" \
+            --head-sha "${{ github.event.pull_request.head.sha }}" \
+            --bump-script "$RUNNER_TEMP/bump.rb" \
+            --github-output "$GITHUB_OUTPUT"
+
+      # RESTORE all six formula files from the trusted BASE_SHA with their
+      # original git modes.  Then execute the trusted bump script against the
+      # restored (trusted) Formula/ files.
+      - name: Apply bump with trusted script
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 -I "$RUNNER_TEMP/renovate_bump.py" apply-bump \
+            --base-sha "${{ github.event.pull_request.base.sha }}" \
+            --version "${{ steps.validate-pr.outputs.version }}" \
+            --bump-script "$RUNNER_TEMP/bump.rb" \
+            --formula-dir "${{ github.workspace }}/Formula"
+
+      # Verify that exactly the six formula files were modified, stage them.
+      - name: Stage and verify changed formulae
+        id: stage
+        run: |
+          python3 -I "$RUNNER_TEMP/renovate_bump.py" stage \
+            --bump-script "$RUNNER_TEMP/bump.rb" \
+            --github-output "$GITHUB_OUTPUT"
+
+      # Only now, immediately before the push, mint a short-lived token.
+      - name: Generate commit token
+        if: steps.stage.outputs.has_changes == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.BOT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+
+      - name: Commit and push
+        if: steps.stage.outputs.has_changes == 'true'
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          python3 -I "$RUNNER_TEMP/renovate_bump.py" commit-push \
+            --version "${{ steps.validate-pr.outputs.version }}" \
+            --head-ref "${{ github.event.pull_request.head.ref }}" \
+            --expected-sha "${{ github.event.pull_request.head.sha }}" \
+            --repository "${{ github.repository }}" \
+            --bump-script "$RUNNER_TEMP/bump.rb"

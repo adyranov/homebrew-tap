@@ -15,7 +15,13 @@ class OmnivoiceCpp < Formula
     sha256 "ad358739f639825c39f490d96568df6d28af511e04662be4f30cf5ce9eb3b9d3"
   end
 
-  depends_on macos: :sonoma
+  livecheck do
+    url "https://github.com/adyranov/ggml-metal-dist"
+    strategy :github_latest
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
+  depends_on macos: :sequoia
 
   BIN_RENAMES = {
     "quantize"   => "omnivoice-quantize",
@@ -33,6 +39,6 @@ class OmnivoiceCpp < Formula
     assert_path_exists bin/"omnivoice-tts"
     assert_path_exists bin/"omnivoice-quantize"
     out = shell_output("#{bin}/omnivoice-tts --help 2>&1")
-    assert out.length > 20
+    assert_match(/usage:/i, out)
   end
 end

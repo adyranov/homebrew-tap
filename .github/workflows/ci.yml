@@ -5,15 +5,15 @@ on:
     paths:
       - "Formula/**"
       - "lib/**"
-      - ".github/renovate.json5"
-      - ".github/workflows/**"
+      - ".github/workflows/ci.yml"
+      - "scripts/ci_formulae.sh"
   push:
     branches: [main]
     paths:
       - "Formula/**"
       - "lib/**"
-      - ".github/renovate.json5"
-      - ".github/workflows/**"
+      - ".github/workflows/ci.yml"
+      - "scripts/ci_formulae.sh"
   workflow_dispatch:
 
 permissions:
@@ -49,6 +49,17 @@ jobs:
       - name: Verify runner architecture
         run: test "$(uname -m)" = "${{ matrix.arch }}"
 
+      - name: Cache Homebrew (gems, bottles, API)
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: brew-cache-${{ runner.os }}-v1
+          restore-keys: |
+            brew-cache-${{ runner.os }}-
+
+      - name: Prepare runner
+        run: scripts/ci_formulae.sh prepare-runner
+
       - name: Tap local checkout
         run: brew tap --force adyranov/tap "$GITHUB_WORKSPACE"
 
@@ -56,47 +67,38 @@ jobs:
         run: brew trust adyranov/tap
 
       - name: Audit all formulae
-        run: >-
-          brew audit --strict --online --formula
-          adyranov/tap/llama-cpp
-          adyranov/tap/whisper-cpp
-          adyranov/tap/stable-diffusion-cpp
-          adyranov/tap/acestep-cpp
-          adyranov/tap/crispasr
-          adyranov/tap/omnivoice-cpp
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: scripts/ci_formulae.sh audit
 
       - name: Style formulae
         run: brew style Formula/*.rb lib/*.rb
 
-      - name: Install and test co-installable bundle with whisper-cpp
+      - name: Validate livecheck
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: scripts/ci_formulae.sh livecheck
+
+      - name: Install and test all formulae
         env:
           HOMEBREW_NO_INSTALL_FROM_API: "1"
-        run: |
-          set -euo pipefail
-          for formula in llama-cpp stable-diffusion-cpp acestep-cpp crispasr omnivoice-cpp whisper-cpp; do
-            brew install --formula "adyranov/tap/$formula"
-            brew test "adyranov/tap/$formula"
-          done
+        run: scripts/ci_formulae.sh install-test
+
+      - name: Verify installed bin files
+        run: scripts/ci_formulae.sh verify-bins
+
+      - name: Check linkage
+        env:
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+        run: scripts/ci_formulae.sh linkage
+
+      - name: Check Mach-O architecture of shipped binaries
+        run: scripts/ci_formulae.sh verify-arch ${{ matrix.arch }}
 
       - name: Assert core conflicts (llama.cpp, whisper-cpp)
         env:
           HOMEBREW_NO_INSTALL_FROM_API: "1"
-        run: |
-          set -euo pipefail
-          if brew install --formula llama.cpp 2>&1; then
-            echo "expected conflict: llama.cpp vs tap llama-cpp"
-            exit 1
-          fi
-          if brew install --formula whisper-cpp 2>&1; then
-            echo "expected conflict: core whisper-cpp vs tap whisper-cpp"
-            exit 1
-          fi
+        run: scripts/ci_formulae.sh conflicts
 
       - name: Assert binary renames
-        run: |
-          set -euo pipefail
-          test -x "$(brew --prefix)/bin/ace-quantize"
-          test -x "$(brew --prefix)/bin/omnivoice-quantize"
-          test -x "$(brew --prefix)/bin/omnivoice-tts-server"
-          ! test -e "$(brew --prefix)/bin/quantize"
-          test -x "$(brew --prefix)/bin/parakeet-cli"
+        run: scripts/ci_formulae.sh renames

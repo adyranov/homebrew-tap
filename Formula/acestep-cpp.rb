@@ -15,7 +15,13 @@ class AcestepCpp < Formula
     sha256 "9d54284b3e743b9960565b2ad201410308755d0f72120c62c80b2bdeccb230cc"
   end
 
-  depends_on macos: :sonoma
+  livecheck do
+    url "https://github.com/adyranov/ggml-metal-dist"
+    strategy :github_latest
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
+  depends_on macos: :sequoia
 
   BIN_RENAMES = {
     "mp3-codec"    => "ace-mp3-codec",
@@ -34,6 +40,6 @@ class AcestepCpp < Formula
     assert_path_exists bin/"ace-lm"
     assert_path_exists bin/"ace-quantize"
     out = shell_output("#{bin}/ace-lm --help 2>&1")
-    assert out.length > 20
+    assert_match(/usage:/i, out)
   end
 end

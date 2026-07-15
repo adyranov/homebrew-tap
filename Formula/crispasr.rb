@@ -15,7 +15,13 @@ class Crispasr < Formula
     sha256 "f6b8ca982e04c6794686d10efd1654b5a68890a51d179949ed894ae23a2fbb2e"
   end
 
-  depends_on macos: :sonoma
+  livecheck do
+    url "https://github.com/adyranov/ggml-metal-dist"
+    strategy :github_latest
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
+  depends_on macos: :sequoia
 
   def caveats
     <<~EOS
@@ -26,6 +32,6 @@ class Crispasr < Formula
   test do
     assert_path_exists bin/"crispasr"
     out = shell_output("#{bin}/crispasr --help 2>&1")
-    assert out.length > 20
+    assert_match(/usage:/i, out)
   end
 end

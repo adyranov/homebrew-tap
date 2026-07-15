@@ -15,7 +15,13 @@ class LlamaCpp < Formula
     sha256 "dcbda771b4e46c01bebe853170d8f3f20aff7cbb03ccbf36287ebc50e6005794"
   end
 
-  depends_on macos: :sonoma
+  livecheck do
+    url :homepage
+    strategy :github_latest
+    regex(/^v?(\d+(?:\.\d+)+)$/i)
+  end
+
+  depends_on macos: :sequoia
   depends_on "openssl@3"
 
   conflicts_with "llama.cpp", because: "both install llama-* binaries with embedded Metal-patched ggml"
@@ -30,6 +36,6 @@ class LlamaCpp < Formula
   test do
     assert_path_exists bin/"llama-cli"
     out = shell_output("#{bin}/llama-cli --help 2>&1")
-    assert out.length > 20
+    assert_match(/usage/i, out)
   end
 end
