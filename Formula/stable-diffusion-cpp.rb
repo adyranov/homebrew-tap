@@ -8,11 +8,11 @@ class StableDiffusionCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.1/stable-diffusion-cpp-v26.7.1-arm64-apple-darwin.tar.gz"
-    sha256 "445d2fdc9f110db2181d159fc20d155c70d8be75e0292429ff20be6aabc403bc"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/stable-diffusion-cpp-v26.7.2-arm64-apple-darwin.tar.gz"
+    sha256 "0e51a7ae17649c33acc2d96c508bc1f2eede81eba1292c0ba1e331065f1b92c0"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.1/stable-diffusion-cpp-v26.7.1-x86_64-apple-darwin.tar.gz"
-    sha256 "89ed960a16f8e2c1c3eb532b7ce406d15173bd26bc5048c2e2c5096bdff21d74"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/stable-diffusion-cpp-v26.7.2-x86_64-apple-darwin.tar.gz"
+    sha256 "c831eacd4fa521719edbe591182c6371f080e9d2134d2514aa8d9871f39cf7f5"
   end
 
   depends_on macos: :sonoma

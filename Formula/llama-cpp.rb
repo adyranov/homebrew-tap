@@ -8,11 +8,11 @@ class LlamaCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/llama-cpp-v26.7.1-arm64-apple-darwin.tar.gz"
-    sha256 "63d072c924c83bbe400764cd0e129b42f1517a1e1ed16259078c8c6917e53f00"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/llama-cpp-v26.7.2-arm64-apple-darwin.tar.gz"
+    sha256 "1c05fa1262fda09fde44ab1d574b0970569cd8ababc37d9af3abea104050094a"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/llama-cpp-v26.7.1-x86_64-apple-darwin.tar.gz"
-    sha256 "96d17d5ef18547e31d4dfe3d23142a0fa0ede0b4e1092519359c0454c4ad1991"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/llama-cpp-v26.7.2-x86_64-apple-darwin.tar.gz"
+    sha256 "dcbda771b4e46c01bebe853170d8f3f20aff7cbb03ccbf36287ebc50e6005794"
   end
 
   depends_on macos: :sonoma
