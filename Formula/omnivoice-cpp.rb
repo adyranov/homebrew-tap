@@ -8,11 +8,11 @@ class OmnivoiceCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/omnivoice-cpp-v26.7.2-arm64-apple-darwin.tar.gz"
-    sha256 "5a6459d1213f9678d06e411cbc665ba4f4e20275a836df2815b2fc7c056d6d42"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.0/omnivoice-cpp-v26.8.0-arm64-apple-darwin.tar.gz"
+    sha256 "9c3a0474be5f6209bebe360d25252d05abf38665184f08077771fb2df48ed932"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/omnivoice-cpp-v26.7.2-x86_64-apple-darwin.tar.gz"
-    sha256 "ad358739f639825c39f490d96568df6d28af511e04662be4f30cf5ce9eb3b9d3"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.0/omnivoice-cpp-v26.8.0-x86_64-apple-darwin.tar.gz"
+    sha256 "2f5faa7cc45c9c817cf1e995b81bebddafcff7a705ad2684e1d4408c7a586dbf"
   end
 
   livecheck do
