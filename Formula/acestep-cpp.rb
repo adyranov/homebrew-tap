@@ -8,11 +8,11 @@ class AcestepCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/acestep-cpp-v26.7.2-arm64-apple-darwin.tar.gz"
-    sha256 "95f5c5b9b12f8a5d14aa5ae79a80a42786ff3b61fd2fce0f6cc76965bda36acd"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.0/acestep-cpp-v26.8.0-arm64-apple-darwin.tar.gz"
+    sha256 "be382eb208db6ab23b8b091c242f679752399558e351a4a6dbdb57c1cb31da83"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.7.2/acestep-cpp-v26.7.2-x86_64-apple-darwin.tar.gz"
-    sha256 "9d54284b3e743b9960565b2ad201410308755d0f72120c62c80b2bdeccb230cc"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.0/acestep-cpp-v26.8.0-x86_64-apple-darwin.tar.gz"
+    sha256 "4d3ccc149e7fb93770be96100354794ed733a90b03a70a0e24caa794710a42f3"
   end
 
   livecheck do
