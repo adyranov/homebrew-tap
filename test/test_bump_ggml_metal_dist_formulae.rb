@@ -24,12 +24,12 @@ module FormulaGen
     RUBY
   end
 
-  def six_formulae(dir, ver = "v26.6.0")
+  def seven_formulae(dir, ver = "v26.6.0")
     BumpUtils::MANIFEST.each { |n| File.write(File.join(dir, "#{n}.rb"), valid(n, ver)) }
   end
 
   def release(ver, extra: nil, missing: [], draft: false, prerelease: false, published: true)
-    # 12 tarballs + 12 .sha256 sidecars = 24 assets
+    # 14 tarballs + 14 .sha256 sidecars = 28 assets
     tars = BumpUtils::MANIFEST.product(BumpUtils::ARCHES).map { |f, a| "#{f}-#{ver}-#{a}-apple-darwin.tar.gz" }
     assets = tars.flat_map { |t| [t, "#{t}.sha256"] }
     # Remove matching tarball+sidecar for each missing name
@@ -68,13 +68,13 @@ class TestBumpUtils < Minitest::Test
   end
 
   # -- Manifest --
-  def test_manifest_accepts_six
-    Dir.mktmpdir { |d| six_formulae(d); BumpUtils.read_formulae(d) }
+  def test_manifest_accepts_seven
+    Dir.mktmpdir { |d| seven_formulae(d); BumpUtils.read_formulae(d) }
   end
 
   def test_manifest_ignores_extra
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       File.write(File.join(d, "extra.rb"), "class Extra < Formula; end\n")
       result = BumpUtils.read_formulae(d)
       assert_equal BumpUtils::MANIFEST.size, result.size
@@ -84,7 +84,7 @@ class TestBumpUtils < Minitest::Test
 
   def test_manifest_rejects_missing
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       File.unlink(File.join(d, "llama-cpp.rb"))
       assert_raises(BumpUtils::ValidationError) { BumpUtils.read_formulae(d) }
     end
@@ -181,14 +181,14 @@ class TestBumpUtils < Minitest::Test
   # -- Base version consistency --
   def test_base_version_ok
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       assert_equal "v26.6.0", BumpUtils.base_version(BumpUtils.read_formulae(d))
     end
   end
 
   def test_base_version_rejects_mixed
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       File.write(File.join(d, "llama-cpp.rb"), valid("llama-cpp", "v26.7.0"))
       assert_raises(BumpUtils::ValidationError) { BumpUtils.base_version(BumpUtils.read_formulae(d)) }
     end
@@ -255,7 +255,7 @@ class TestBumpUtils < Minitest::Test
   # -- Transactional write --
   def test_write_success
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       modes = BumpUtils::MANIFEST.map { |n| File.stat(File.join(d, "#{n}.rb")).mode }
       rendered = BumpUtils::MANIFEST.to_h { |n| [n, valid(n, "v26.7.0")] }
       BumpUtils.write_all(d, rendered)
@@ -269,7 +269,7 @@ class TestBumpUtils < Minitest::Test
 
   def test_write_partial_failure
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       orig = BumpUtils::MANIFEST.map { |n| File.read(File.join(d, "#{n}.rb")) }
       rendered = BumpUtils::MANIFEST.to_h { |n| [n, orig[BumpUtils::MANIFEST.index(n)]] }
 
@@ -292,7 +292,7 @@ class TestBumpUtils < Minitest::Test
 
   def test_write_rename_rollback
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       orig = BumpUtils::MANIFEST.map { |n| File.read(File.join(d, "#{n}.rb")) }
       orig_modes = BumpUtils::MANIFEST.map { |n| File.stat(File.join(d, "#{n}.rb")).mode }
       rendered = BumpUtils::MANIFEST.to_h { |n| [n, valid(n, "v26.7.0")] }
@@ -329,7 +329,7 @@ class TestBumpUtils < Minitest::Test
       dir = File.join(repo, "Formula"); Dir.mkdir(dir)
       base = valid("llama-cpp")
       File.write(File.join(dir, "llama-cpp.rb"), base)
-      other_names = %w[whisper-cpp stable-diffusion-cpp acestep-cpp crispasr omnivoice-cpp]
+      other_names = %w[whisper-cpp stable-diffusion-cpp acestep-cpp crispasr omnivoice-cpp transcribe-cpp]
       other_names.each { |n| File.write(File.join(dir, "#{n}.rb"), valid(n)) }
       system("git", "-C", repo, "add", "-A")
       system("git", "-C", repo, "commit", "-q", "-m", "base")
@@ -396,7 +396,7 @@ class TestBumpUtils < Minitest::Test
   # -- Rollback diagnostics preserved in TransactionError --
   def test_write_rename_rollback_with_diagnostics
     Dir.mktmpdir do |d|
-      six_formulae(d)
+      seven_formulae(d)
       orig = BumpUtils::MANIFEST.map { |n| File.read(File.join(d, "#{n}.rb")) }
       rendered = BumpUtils::MANIFEST.to_h { |n| [n, valid(n, "v26.7.0")] }
 

@@ -32,8 +32,9 @@ architecture.
 | `acestep-cpp` | [acestep.cpp](https://github.com/ServeurpersoCom/acestep.cpp) | ACE-Step 1.5 music generation, Metal-accelerated. Utility binaries installed with `ace-` prefixes (e.g. `ace-quantize`). |
 | `crispasr` | [CrispASR](https://github.com/CrispStrobe/CrispASR) | Multilingual ASR (fork of whisper.cpp), Metal-accelerated. |
 | `omnivoice-cpp` | [omnivoice.cpp](https://github.com/ServeurpersoCom/omnivoice.cpp) | Text-to-speech, Metal-accelerated. Utility binaries installed with `omnivoice-` prefixes (e.g. `omnivoice-quantize`). |
+| `transcribe-cpp` | [transcribe.cpp](https://github.com/handy-computer/transcribe.cpp) | Audio transcription (GGUF models), Metal-accelerated. |
 
-All six formulae share the `MetalDistInstall` module which patches eligible
+All seven formulae share the `MetalDistInstall` module which patches eligible
 Mach-O files (dylib-id normalisation, rpath pointing to the formula keg's
 `lib` directory, ad-hoc codesign) at install time. Non-Mach-O files and
 symlinks are left unchanged.
@@ -180,7 +181,7 @@ prebuilt artifacts published by
 Releases in `ggml-metal-dist` are picked up by Renovate configured with a
 custom regex manager (canary: `Formula/llama-cpp.rb`). When Renovate opens a
 PR bumping the canary formula, a dedicated workflow
-(`renovate-bump.yml`) runs a trusted bump script to update the remaining five
+(`renovate-bump.yml`) runs a trusted bump script to update the remaining six
 formulae.
 
 To trigger a manual update:

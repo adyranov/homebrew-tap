@@ -274,7 +274,7 @@ def cmd_stage(args: argparse.Namespace):
             parts.append(f"Unexpected changes: {', '.join(sorted(extra))}")
         _die("; ".join(parts))
 
-    # Stage exactly the six manifest files.
+    # Stage exactly the seven manifest files.
     for p in expected_paths:
         _run(["git", "add", p])
 

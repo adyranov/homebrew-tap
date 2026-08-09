@@ -67,7 +67,7 @@ jobs:
             --bump-script "$RUNNER_TEMP/bump.rb" \
             --github-output "$GITHUB_OUTPUT"
 
-      # RESTORE all six formula files from the trusted BASE_SHA with their
+      # RESTORE all seven formula files from the trusted BASE_SHA with their
       # original git modes.  Then execute the trusted bump script against the
       # restored (trusted) Formula/ files.
       - name: Apply bump with trusted script
@@ -80,7 +80,7 @@ jobs:
             --bump-script "$RUNNER_TEMP/bump.rb" \
             --formula-dir "${{ github.workspace }}/Formula"
 
-      # Verify that exactly the six formula files were modified, stage them.
+      # Verify that exactly the seven formula files were modified, stage them.
       - name: Stage and verify changed formulae
         id: stage
         run: |

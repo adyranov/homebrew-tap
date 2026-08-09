@@ -3,7 +3,7 @@
 
 # Shared install logic for the prebuilt, Metal-accelerated binary formulae in
 # this tap (llama-cpp, whisper-cpp, stable-diffusion-cpp, acestep-cpp,
-# crispasr, omnivoice-cpp).
+# crispasr, omnivoice-cpp, transcribe-cpp).
 # Artifacts may omit lib/ or include/, so install only the layout present.
 module MetalDistInstall
   BIN_RENAMES = {}.freeze

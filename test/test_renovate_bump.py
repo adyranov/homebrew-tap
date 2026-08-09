@@ -22,6 +22,7 @@ _MANIFEST = [
     "acestep-cpp",
     "crispasr",
     "omnivoice-cpp",
+    "transcribe-cpp",
 ]
 
 _VERSION_RE = re.compile(r"^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$")
@@ -71,7 +72,7 @@ def _commit_everything(path, msg):
 
 
 class RenovateBumpTestBase(unittest.TestCase):
-    """Set up a temp directory with a git repo containing 6 formula files.
+    """Set up a temp directory with a git repo containing 7 formula files.
 
     Uses a minimal fake bump.rb script (not the real one) to avoid Ruby
     dependency for the core Python test suite.  A single real-Ruby test
@@ -176,8 +177,8 @@ class RenovateBumpTestBase(unittest.TestCase):
         with open(self._gh_out, "w"):
             pass
 
-    def _modify_exactly_six(self, version="v26.8.0"):
-        """Modify all six formula files in the working tree (not staged)."""
+    def _modify_exactly_seven(self, version="v26.8.0"):
+        """Modify all seven formula files in the working tree (not staged)."""
         for name in _MANIFEST:
             p = os.path.join(self._formula_dir, f"{name}.rb")
             with open(p, "w") as f:
@@ -191,7 +192,7 @@ class RenovateBumpTestBase(unittest.TestCase):
 
 class TestValidatePr(RenovateBumpTestBase):
     def test_allowed_modification(self):
-        """Six formula files modified → pass."""
+        """Seven formula files modified → pass."""
         r = self._run_script(
             "validate-pr",
             base_sha=self._base_sha,
@@ -358,7 +359,7 @@ class TestValidatePr(RenovateBumpTestBase):
         self.assertEqual(outputs.get("validation_result"), "pass")
 
     def test_partial_subset_modified(self):
-        """Three of six manifest files modified → pass."""
+        """Three of seven manifest files modified → pass."""
         for name in _MANIFEST[:3]:
             p = os.path.join(self._formula_dir, f"{name}.rb")
             with open(p, "w") as f:
@@ -490,8 +491,8 @@ class TestApplyBump(RenovateBumpTestBase):
 
 class TestStage(RenovateBumpTestBase):
     def test_exact_staging(self):
-        """Six files modified → staged and has_changes=true."""
-        self._modify_exactly_six()
+        """Seven files modified → staged and has_changes=true."""
+        self._modify_exactly_seven()
         r = self._run_script(
             "stage",
             bump_script=self._bump_script,
@@ -525,7 +526,7 @@ class TestStage(RenovateBumpTestBase):
 
     def test_extra_change_rejected(self):
         """Extra file modified → reject."""
-        self._modify_exactly_six()
+        self._modify_exactly_seven()
         p = os.path.join(self._repo, "unexpected.txt")
         with open(p, "w") as f:
             f.write("extra")
@@ -537,7 +538,7 @@ class TestStage(RenovateBumpTestBase):
 
     def test_untracked_file_rejected(self):
         """Untracked file present → reject."""
-        self._modify_exactly_six()
+        self._modify_exactly_seven()
         p = os.path.join(self._repo, "unknown.txt")
         with open(p, "w") as f:
             f.write("unknown")
@@ -562,7 +563,7 @@ class TestStage(RenovateBumpTestBase):
 
     def test_staged_changes_rejected_2(self):
         """Pre-existing staged changes → reject."""
-        self._modify_exactly_six()
+        self._modify_exactly_seven()
         # Stage one file manually
         subprocess.run(
             ["git", "-C", self._repo, "add", "Formula/llama-cpp.rb"], check=True
@@ -574,7 +575,7 @@ class TestStage(RenovateBumpTestBase):
         self._assert_fail(r, "staged")
 
     def test_partial_change_rejected(self):
-        """Only 5 of 6 files modified → reject."""
+        """Only 6 of 7 files modified → reject."""
         for name in _MANIFEST[:5]:
             p = os.path.join(self._formula_dir, f"{name}.rb")
             with open(p, "w") as f:
@@ -633,7 +634,7 @@ class TestCommitPush(RenovateBumpTestBase):
         )
 
         # Stage changes (as if stage step succeeded)
-        self._modify_exactly_six("v26.8.0")
+        self._modify_exactly_seven("v26.8.0")
         for name in _MANIFEST:
             subprocess.run(
                 ["git", "-C", self._repo, "add", f"Formula/{name}.rb"], check=True
@@ -737,7 +738,7 @@ class TestCommitPush(RenovateBumpTestBase):
 
     def test_unstaged_modification_after_stage(self):
         """Stage a formula then modify it again (MM state) → reject."""
-        # setUp already staged all 6 formulae at v26.8.0.  Modify one in
+        # setUp already staged all 7 formulae at v26.8.0.  Modify one in
         # the working tree to create an unstaged change on top.
         p = os.path.join(self._formula_dir, "llama-cpp.rb")
         with open(p, "w") as f:
@@ -805,7 +806,7 @@ class TestRealRubyContracts(RenovateBumpTestBase):
         super().setUp()
         self._bump_script = _BUMP_SCRIPT
 
-    def test_list_formulae_returns_six_names(self):
+    def test_list_formulae_returns_seven_names(self):
         """Real --list-formulae returns unique safe names matching manifest."""
         r = subprocess.run(
             ["ruby", _BUMP_SCRIPT, "--list-formulae"],

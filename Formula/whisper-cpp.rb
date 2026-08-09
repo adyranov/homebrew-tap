@@ -8,11 +8,11 @@ class WhisperCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.0/whisper-cpp-v26.8.0-arm64-apple-darwin.tar.gz"
-    sha256 "4c6560996d37e0b0b620ce4ce6e0a57f322cd90377c8bdc3a201c5048a817cf5"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.1/whisper-cpp-v26.8.1-arm64-apple-darwin.tar.gz"
+    sha256 "034eab06c8662007c661436ff44fc2637d98260dc712fe430b55921dd428cba1"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.0/whisper-cpp-v26.8.0-x86_64-apple-darwin.tar.gz"
-    sha256 "7209b5a175d65e460198cf90d58031bbb39d3cb25f18994512122294c83fa502"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.1/whisper-cpp-v26.8.1-x86_64-apple-darwin.tar.gz"
+    sha256 "8d7ed888e991e96415a70ab6f7639eecb1646e4324b8a143fb31b68e5db1e053"
   end
 
   livecheck do

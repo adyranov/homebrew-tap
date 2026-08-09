@@ -9,8 +9,8 @@
 # - Works on files restored from trusted BASE_SHA (never PR-provided content).
 # - Requires strictly newer vMAJOR.MINOR.PATCH format.
 # - Validates release: non-draft, non-prerelease, tag_name match,
-#   non-null published_at, exactly 12 tarballs plus 12 matching .sha256
-#   sidecars (24 total), rejecting any unexpected asset.
+#   non-null published_at, exactly 14 tarballs plus 14 matching .sha256
+#   sidecars (28 total), rejecting any unexpected asset.
 # - URL/SHA extraction uses Ripper (stdlib AST) — no regex false positives.
 # - Transactional write with mode preservation, rollback, and error reporting.
 require "digest"
@@ -22,7 +22,7 @@ require "ripper"
 require "uri"
 
 REPO = "adyranov/ggml-metal-dist"
-MANIFEST = %w[llama-cpp whisper-cpp stable-diffusion-cpp acestep-cpp crispasr omnivoice-cpp].freeze
+MANIFEST = %w[llama-cpp whisper-cpp stable-diffusion-cpp acestep-cpp crispasr omnivoice-cpp transcribe-cpp].freeze
 ARCHES = %w[arm64 x86_64].freeze
 VERSION_RE = /\Av(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\z/
 
@@ -129,7 +129,7 @@ module BumpUtils
     MANIFEST.to_h { |name| [name, File.read(File.join(dir, "#{name}.rb"))] }
   end
 
-  # Validate all 6 base formulae share the same version.
+  # Validate all 7 base formulae share the same version.
   def self.base_version(formulae)
     vers = formulae.map { |n, c| parse_formula(c, n)["arm64"][:version] }.uniq
     raise ValidationError, "Inconsistent base versions: #{vers.join(', ')}" unless vers.size == 1

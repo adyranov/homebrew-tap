@@ -16,7 +16,7 @@ pipeline. Public contribution workflows are not a project goal.
 
 ## Repository Map
 
-- `Formula/*.rb` — tap formulae; six current formulae are ggml-metal-dist-backed.
+- `Formula/*.rb` — tap formulae; seven current formulae are ggml-metal-dist-backed.
 - `lib/metal_dist_install.rb` — shared installation and Mach-O fixups.
 - `scripts/bump_ggml_metal_dist_formulae.rb` — trusted release updater.
 - `test/` — offline updater tests.
@@ -35,14 +35,15 @@ pipeline. Public contribution workflows are not a project goal.
 - `acestep-cpp`
 - `crispasr`
 - `omnivoice-cpp`
+- `transcribe-cpp`
 
-For these six formulae, release assets use:
+For these seven formulae, release assets use:
 
 ```text
 https://github.com/adyranov/ggml-metal-dist/releases/download/<tag>/<formula>-<tag>-<arch>-apple-darwin.tar.gz
 ```
 
-Keep both architectures and all six formulae on the same release tag. Never
+Keep both architectures and all seven formulae on the same release tag. Never
 invent or copy unverified checksums. Prefer the tracked bump script over a
 partial hand-edited release update:
 
@@ -51,7 +52,7 @@ ruby scripts/bump_ggml_metal_dist_formulae.rb vMAJOR.MINOR.PATCH
 ```
 
 The updater validates release metadata and computes archive SHA-256 values.
-Inspect its six-formula diff before accepting the result.
+Inspect its seven-formula diff before accepting the result.
 
 If the ggml-metal-dist-backed formula inventory changes, update the updater
 manifest, workflow allowlists and assertions, tests, Renovate assumptions, and
