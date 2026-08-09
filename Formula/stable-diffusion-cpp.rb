@@ -8,11 +8,11 @@ class StableDiffusionCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.1/stable-diffusion-cpp-v26.8.1-arm64-apple-darwin.tar.gz"
-    sha256 "8045f3c68575c9a2f985a00782845a1c1010a4dba274b0ce2c3d157a57a904bf"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.2/stable-diffusion-cpp-v26.8.2-arm64-apple-darwin.tar.gz"
+    sha256 "f28f600841956d9b129958fc1a4fbeda0368eb13e96f0906fdaac2a2cfab3c95"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.1/stable-diffusion-cpp-v26.8.1-x86_64-apple-darwin.tar.gz"
-    sha256 "e858eb38379dcf662192db7d87eabfb9d5794295215cadd40f549707f0df5e1d"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.2/stable-diffusion-cpp-v26.8.2-x86_64-apple-darwin.tar.gz"
+    sha256 "7d559d17329956cfe3f779590908b5ba8c6dca90cb0405e1da617abdded921f7"
   end
 
   livecheck do

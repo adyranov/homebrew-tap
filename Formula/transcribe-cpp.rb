@@ -8,11 +8,11 @@ class TranscribeCpp < Formula
   license "MIT"
 
   if Hardware::CPU.arm?
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.1/transcribe-cpp-v26.8.1-arm64-apple-darwin.tar.gz"
-    sha256 "66c8d39585bd4e43845d3cacc6eac07e286637cb0bea1ade582ec451cc569be2"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.2/transcribe-cpp-v26.8.2-arm64-apple-darwin.tar.gz"
+    sha256 "234a9b92f884384313808fe85623c5b3bc2191f9274a544233da57f63545b71e"
   else
-    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.1/transcribe-cpp-v26.8.1-x86_64-apple-darwin.tar.gz"
-    sha256 "f81c089f10023e7485cbe743d6f6b2b5cfe93f913a04f45a0712ad246529188a"
+    url "https://github.com/adyranov/ggml-metal-dist/releases/download/v26.8.2/transcribe-cpp-v26.8.2-x86_64-apple-darwin.tar.gz"
+    sha256 "02052b43dfec4dcaf05b525c3b990b9f2f7b1aba88e88a416a1b9ea53dc0d8f0"
   end
 
   livecheck do
